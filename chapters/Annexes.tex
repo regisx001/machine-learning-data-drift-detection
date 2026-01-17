@@ -1,0 +1,74 @@
+% ==================================================
+% ANNEXES
+% ==================================================
+
+\appendix
+\chapter{Annexes}
+\label{ch:annexes}
+
+\section{Extraits de Code Python}
+
+Cette section présente les fonctions clés implémentées dans les notebooks pour la simulation et la détection du drift.
+
+\subsection{Simulation du Drift de Température}
+Le code suivant montre comment les données de production (Phase B) ont été générées avec un décalage de la moyenne de température (+7°C) pour simuler une surchauffe.
+
+\begin{lstlisting}[language=Python, caption=Génération des données avec Drift]
+# Paramètres de simulation
+n_samples = 1000
+
+# Phase A : Données Normales
+temp_A = np.random.normal(loc=75, scale=5, size=n_samples)
+
+# Phase B : Données avec Drift (Surchauffe)
+# Moyenne augmentée de 75 à 82
+temp_B = np.random.normal(loc=82, scale=5, size=n_samples)
+
+# Les autres variables (Vibration, Pression) restent stables
+vib_A = np.random.normal(loc=0.5, scale=0.1, size=n_samples)
+vib_B = np.random.normal(loc=0.5, scale=0.1, size=n_samples)
+\end{lstlisting}
+
+\subsection{Fonction de Bootstrapping}
+Implémentation de la fonction utilisée pour calculer les intervalles de confiance de l'accuracy.
+
+\begin{lstlisting}[language=Python, caption=Fonction de Bootstrap pour l'inférence]
+def bootstrap_metric(X, y, model, metric_fn, n_bootstrap=1000):
+    """
+    Génère une distribution de scores par rééchantillonnage avec remise.
+    """
+    scores = []
+    n = len(X)
+    
+    for _ in range(n_bootstrap):
+        # Tirage avec remise (resampling)
+        idx = np.random.choice(n, size=n, replace=True)
+        X_sample = X.iloc[idx]
+        y_sample = y.iloc[idx]
+        
+        # Prédiction et calcul du score
+        y_pred = model.predict(X_sample)
+        scores.append(metric_fn(y_sample, y_pred))
+    
+    return np.array(scores)
+\end{lstlisting}
+
+\section{Environnement Technique}
+
+Le projet a été réalisé sous Python 3.10. Les principales bibliothèques utilisées sont listées ci-dessous avec leurs versions.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Bibliothèque} & \textbf{Usage Principal} \\ \midrule
+    \texttt{numpy} & Calcul matriciel et génération aléatoire \\
+    \texttt{pandas} & Manipulation des DataFrames \\
+    \texttt{scikit-learn} & Modélisation (Pipeline, LogisticRegression) \\
+    \texttt{scipy} & Tests statistiques (Kolmogorov-Smirnov) \\
+    \texttt{matplotlib} & Visualisation des données \\
+    \bottomrule
+    \end{tabular}
+    \caption{Environnement technique du projet}
+    \label{tab:tech_stack}
+\end{table}
