@@ -1,0 +1,64 @@
+% ==================================================
+% CHAPITRE 3 : IMPACT DU DATA DRIFT SUR LA PERFORMANCE
+% ==================================================
+
+\chapter{Impact du Changement de Distribution sur la Performance du Modèle}
+\label{ch:impact_drift_performance}
+
+Après avoir mis en évidence la présence d’un changement de distribution entre les données d’entraînement (Phase A) et les données de production (Phase B), ce chapitre vise à analyser l’impact de ce data drift sur les performances du modèle de machine learning. L’objectif est de déterminer si le changement détecté affecte de manière significative la capacité prédictive du modèle déployé.
+
+\section{Entraînement du Modèle de Référence}
+
+Un modèle de classification binaire a été entraîné sur les données de la Phase A afin de simuler un modèle déjà déployé en production. L’algorithme choisi est une régression logistique, implémentée à l’aide de la bibliothèque \texttt{scikit-learn}. Ce choix est motivé par sa simplicité, son interprétabilité et son adéquation avec un cadre mathématique rigoureux.
+
+Avant l’entraînement, les variables numériques ont été standardisées afin d’assurer une mise à l’échelle homogène des données. Le jeu de données de la Phase A a ensuite été divisé en ensembles d’entraînement et de test, permettant d’évaluer les performances initiales du modèle. Les scores obtenus sur ces données constituent la performance de référence du modèle, notée $S_A$.
+
+\section{Évaluation du Modèle sur les Données de Production}
+
+Le modèle entraîné sur la Phase A a été appliqué tel quel aux données de la Phase B, sans réentraînement, afin de reproduire un scénario réaliste de déploiement. Les performances obtenues sur ces données de production sont notées $S_B$.
+
+La comparaison entre $S_A$ et $S_B$ permet d’observer une variation des performances du modèle après le changement de distribution. Toutefois, une simple comparaison ponctuelle des scores ne permet pas de conclure sur la significativité statistique de cette variation. Il est donc nécessaire d’adopter une approche d’inférence statistique.
+
+\section{Bootstrapping des Performances}
+
+Afin de quantifier l’incertitude associée aux scores de performance, une méthode de rééchantillonnage par \textit{bootstrapping} a été utilisée. Cette approche consiste à générer un grand nombre d’échantillons bootstrap à partir des données originales, puis à calculer le score de performance pour chacun de ces échantillons.
+
+Pour chaque phase, une distribution empirique du score d’accuracy a ainsi été obtenue. Cette distribution permet d’estimer des intervalles de confiance robustes, sans hypothèse paramétrique sur la distribution du score.
+
+\section{Intervalles de Confiance et Analyse Statistique}
+
+À partir des distributions bootstrap, des intervalles de confiance à 95\% ont été calculés pour les performances du modèle sur les données de la Phase A et de la Phase B. Ces intervalles fournissent une estimation de la variabilité du score de performance et permettent une comparaison statistique entre les deux phases.
+
+La comparaison des intervalles de confiance permet de déterminer si la différence observée entre les performances est statistiquement significative. L’absence de chevauchement entre les intervalles indique une dégradation significative des performances du modèle, tandis qu’un chevauchement suggère que la différence observée peut être due à la variabilité statistique.
+
+\section{Visualisation des Résultats}
+
+La Figure~\ref{fig:bootstrap_accuracy} présente les distributions des scores d’accuracy obtenues par bootstrapping pour les 
+données de la Phase A et de la Phase B. Les lignes verticales indiquent les bornes des intervalles de confiance à 95\% pour chaque distribution. De plus, la Figure~\ref{fig:model_comparison} offre une vue comparative globale via des boxplots.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/bootstrapped_accuracy_distributions.png}
+    \caption{Distributions bootstrap des scores d’accuracy pour les Phases A et B, avec intervalles de confiance à 95\%.}
+    \label{fig:bootstrap_accuracy}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/model_performance_comparison.png}
+    \caption{Comparaison détaillée de la performance (Accuracy) entre la Phase A et la Phase B (Histogrammes et Boxplots).}
+    \label{fig:model_comparison}
+\end{figure}
+
+\section{Interprétation des Résultats}
+
+L’analyse des distributions bootstrap et des intervalles de confiance met en évidence une baisse significative de la performance du modèle sur les données de production (Phase B) par rapport aux données historiques (Phase A).
+Comme illustré dans la Figure~\ref{fig:bootstrap_accuracy}, les deux distributions sont clairement séparées. L'intervalle de confiance de la Phase A est centré autour de valeurs élevées (indiquant un modèle performant sur les données saines), tandis que celui de la Phase B est décalé vers des valeurs inférieures.
+
+L'absence de chevauchement entre les intervalles (ou leur très faible recouvrement) confirme que cette dégradation n'est pas due au hasard, mais bien à l'impact du \textit{covariate drift} (surchauffe détectée sur la température). Le modèle, entraîné sur des températures plus basses, peine à généraliser correctement sur le régime de fonctionnement "surchauffe", ce qui entraîne une augmentation des erreurs de classification (faux positifs ou faux négatifs de panne).
+
+Ce résultat justifie la mise en place d'une alerte de monitoring et suggère la nécessité d'un réentraînement du modèle avec ces nouvelles données opérationnelles pour l'adapter aux conditions actuelles (Phase B).
+
+\section{Conclusion du Chapitre}
+
+Ce chapitre démontre que la détection d’un changement de distribution doit être complétée par une analyse de son impact sur les performances du modèle. L’utilisation du bootstrapping et des intervalles de confiance permet d’apporter une conclusion statistiquement fondée sur la validité du modèle en production. Cette approche constitue une étape essentielle dans une stratégie de monitoring post-déploiement des systèmes de machine learning.

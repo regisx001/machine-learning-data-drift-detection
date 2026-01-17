@@ -1,0 +1,101 @@
+% ==================================================
+% CHAPITRE 2 : DÉTECTION STATISTIQUE DU DATA DRIFT
+% ==================================================
+
+\chapter{Détection Statistique du Changement de Distribution}
+\label{ch:detection_drift}
+
+Ce chapitre est consacré à la détection statistique du changement de distribution entre les données d’entraînement (Phase A) et les données de production (Phase B). L’objectif est de déterminer, à l’aide de tests statistiques rigoureux, si les différences observées entre les deux phases sont statistiquement significatives et peuvent être interprétées comme un phénomène de data drift.
+
+\section{Motivation des Tests Non-Paramétriques}
+
+Dans un contexte de surveillance post-déploiement, les distributions des données observées en production sont généralement inconnues et peuvent ne pas suivre des lois paramétriques classiques. Il est donc nécessaire d’utiliser des tests statistiques ne reposant pas sur des hypothèses fortes concernant la forme des distributions.
+
+Les tests non-paramétriques sont particulièrement adaptés à ce contexte, car ils permettent de comparer des distributions empiriques sans supposer de modèle probabiliste spécifique. Dans ce projet, le test de Kolmogorov-Smirnov est utilisé pour comparer les distributions des variables numériques entre la Phase A et la Phase B, indépendamment de leur loi sous-jacente.
+
+\section{Test de Kolmogorov-Smirnov}
+
+Le test de Kolmogorov-Smirnov (KS) est un test non-paramétrique permettant de comparer deux distributions continues à partir de leurs fonctions de répartition empiriques.
+
+Soient $F_A(x)$ et $F_B(x)$ les fonctions de répartition empiriques associées respectivement aux données de la Phase A et de la Phase B. La statistique du test KS est définie par :
+
+\[
+D = \sup_x \left| F_A(x) - F_B(x) \right|
+\]
+
+L’hypothèse nulle du test est formulée comme suit :
+
+\[
+H_0 : F_A(x) = F_B(x)
+\]
+
+contre l’hypothèse alternative :
+
+\[
+H_1 : F_A(x) \neq F_B(x)
+\]
+
+Une p-value inférieure au seuil de significativité $\alpha = 0.05$ conduit au rejet de l’hypothèse nulle, indiquant un changement statistiquement significatif de distribution.
+
+\section{Application du Test KS aux Données Simulées}
+
+Le test de Kolmogorov-Smirnov a été appliqué aux variables numériques générées synthétiquement afin de comparer les distributions observées en Phase A et en Phase B. Chaque variable a été analysée indépendamment afin d’identifier la présence éventuelle d’un \textit{covariate drift}.
+
+Les résultats obtenus montrent que certaines variables présentent une valeur élevée de la statistique KS associée à une p-value très inférieure au seuil de significativité de 5\%. Ces résultats conduisent au rejet de l’hypothèse nulle d’égalité des distributions pour ces variables, indiquant un changement de distribution statistiquement significatif entre les données historiques et les données de production.
+
+À l’inverse, d’autres variables présentent une p-value élevée, suggérant l’absence de différence statistiquement significative entre les deux phases. Cela indique que toutes les variables ne sont pas affectées par le drift, ce qui correspond à un scénario réaliste en environnement de production.
+
+
+\section{Visualisation des Distributions Avant et Après Drift}
+
+Afin de compléter l’analyse statistique, une visualisation des distributions des variables numériques a été réalisée pour les données de la Phase A et de la Phase B. Ces graphiques permettent d’observer visuellement les différences de distribution mises en évidence par le test de Kolmogorov-Smirnov.                                                                        
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/distribution_temperature.png}
+        \caption{Distribution de \texttt{Temperature}}
+        \label{fig:ks_temperature}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/distribution_vibration.png}
+        \caption{Distribution de \texttt{Vibration}}
+        \label{fig:ks_vibration}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/distribution_pressure.png}
+        \caption{Distribution de \texttt{Pressure}}
+        \label{fig:ks_pressure}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/distribution_rpm.png}
+        \caption{Distribution de \texttt{RPM}}
+        \label{fig:ks_rpm}
+    \end{subfigure}
+
+    \caption{Comparaison des distributions des variables capteurs entre la Phase A (saine) et la Phase B (défaut/drift).}
+    \label{fig:ks_distributions}
+\end{figure}
+
+
+\section{Interprétation des Résultats}
+
+Les résultats du test de Kolmogorov-Smirnov, corroborés par l'analyse visuelle, conduisent aux conclusions suivantes pour les capteurs surveillés :
+
+\begin{itemize}
+    \item \textbf{Température (\texttt{temperature})} : Un drift significatif est détecté ($p\text{-value} \ll 0.05$). La statistique KS élevée et la visualisation (Figure \ref{fig:ks_temperature}) confirment un décalage net de la moyenne (de 75°C à 82°C), simulant une surchauffe ou un décalibrage du capteur.
+    \item \textbf{Vibration, Pression, RPM} : Aucun changement de distribution significatif n'est observé pour ces variables ($p\text{-value} > 0.05$). Les courbes de densité (Figures \ref{fig:ks_vibration}, \ref{fig:ks_pressure}, \ref{fig:ks_rpm}) se superposent parfaitement entre la Phase A et la Phase B.
+\end{itemize}
+
+Cette stabilité des autres paramètres renforce la crédibilité du diagnostic : le problème n'est pas systémique mais localisé sur la température. Cependant, comme la température est une variable prédictive critique, ce drift unique suffit à compromettre la fiabilité du modèle de détection de panne.
+
+La détection statistique du data drift constitue une étape essentielle du monitoring post-déploiement. Toutefois, la mise en évidence d’un changement de distribution ne permet pas, à elle seule, de conclure sur la validité du modèle en production. Il est donc nécessaire d’analyser l’impact de ce drift sur les performances du modèle de machine learning, ce qui fait l’objet du chapitre suivant.

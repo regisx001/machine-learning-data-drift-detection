@@ -1,0 +1,135 @@
+% ==================================================
+% CHAPITRE 1 : INTRODUCTION
+% ==================================================
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+Les modèles de machine learning sont généralement entraînés sur des données historiques en supposant que les caractéristiques statistiques de ces données resteront stables au cours du temps. Cependant, dans des environnements réels et dynamiques, cette hypothèse est souvent mise en défaut. Les comportements des utilisateurs, les conditions économiques ou les politiques commerciales peuvent évoluer, entraînant ainsi des modifications dans la distribution des données d’entrée. Ce phénomène est communément désigné sous le terme de \textbf{changement de distribution}, ou \textbf{data drift}.
+
+
+\noindent Le data drift constitue un enjeu majeur en data science, car il peut conduire à une dégradation progressive, voire brutale, des performances d’un modèle prédictif déployé en production. Un modèle initialement performant peut alors produire des prédictions erronées sans que cette détérioration ne soit immédiatement perceptible. Il devient donc essentiel de disposer de \textbf{méthodes mathématiques et statistiques permettant de détecter ces changements post-déploiement}, afin de garantir la fiabilité et la robustesse des systèmes décisionnels.
+
+\noindent 
+Dans ce contexte, ce projet s’inscrit dans une démarche de \textbf{surveillance des modèles de machine learning}, appliquée à un problème de maintenance prédictive industrielle. L’objectif principal est d’analyser l’impact de différentes formes de data drift sur les distributions des variables capteurs et sur les performances d’un modèle de détection de panne. Pour ce faire, un modèle de référence est d’abord entraîné sur des données de capteurs considérées comme stables, puis un scénario réaliste de dérive des données (usure, surchauffe) est simulé.
+
+
+
+\noindent L’approche adoptée repose sur l’utilisation de \textbf{tests statistiques issus des mathématiques appliquées}, tels que le test de Kolmogorov-Smirnov et le test du Chi-deux, ainsi que sur des métriques de stabilité comme le Population Stability Index (PSI). L’impact du drift est ensuite évalué à travers l’analyse des performances du modèle, notamment en termes d’accuracy, complétée par des méthodes de validation par rééchantillonnage.
+
+
+\noindent  À travers ce travail, l’objectif est de mettre en évidence l’importance du \textbf{monitoring post-déploiement} des modèles de machine learning et de montrer comment les outils mathématiques permettent d’anticiper et de quantifier les risques liés à l’évolution des données dans un cadre opérationnel.
+
+
+
+\section{Contexte Théorique}
+
+Cette section présente les notions théoriques fondamentales nécessaires à la compréhension du phénomène de changement de distribution des données, communément appelé \textit{data drift}. Elle introduit les différents types de drift rencontrés en data science ainsi que leur lien avec les hypothèses statistiques sous-jacentes aux modèles de machine learning.
+
+\subsection{Notion de Data Drift}
+
+Dans le cadre de la modélisation statistique et du machine learning, un modèle est généralement entraîné sur un ensemble de données historiques, supposées représentatives des données futures. Cette hypothèse implique que la distribution jointe des variables explicatives $X$ et de la variable cible $Y$ reste inchangée au cours du temps. Formellement, on suppose que :
+
+\[
+P_{\text{train}}(X, Y) = P_{\text{production}}(X, Y)
+\]
+
+Cependant, dans un environnement réel, cette égalité est rarement vérifiée. Des facteurs externes tels que l’évolution du comportement des utilisateurs, des changements économiques ou des modifications des politiques commerciales peuvent entraîner une variation des distributions statistiques. Ce phénomène est désigné sous le terme de \textbf{data drift}.
+
+Le data drift correspond donc à une situation dans laquelle la distribution des données observées en phase de production diffère de celle utilisée lors de l’entraînement du modèle. Cette divergence peut affecter la capacité du modèle à généraliser correctement, conduisant ainsi à une dégradation de ses performances prédictives.
+
+\subsection{Types de Changement de Distribution}
+
+En pratique, le data drift peut prendre plusieurs formes, selon la nature des distributions affectées. On distingue principalement trois types de changement de distribution.
+
+\subsubsection{Covariate Drift}
+
+Le \textit{covariate drift} correspond à une modification de la distribution des variables explicatives $X$, tandis que la relation conditionnelle entre $X$ et la variable cible $Y$ reste inchangée. Formellement, ce cas peut être décrit par :
+
+\[
+P_{\text{train}}(X) \neq P_{\text{production}}(X)
+\quad \text{et} \quad
+P(Y \mid X) \ \text{constant}
+\]
+
+Ce type de drift est fréquent dans les applications industrielles. Dans ce projet, les modifications simulées sur la variable \texttt{temperature} illustrent ce type de changement.
+
+\subsubsection{Prior Probability Drift}
+
+Le \textit{prior probability drift}, également appelé \textit{label drift}, se produit lorsque la distribution de la variable cible $Y$ change, indépendamment des variables explicatives. On a alors :
+
+\[
+P_{\text{train}}(Y) \neq P_{\text{production}}(Y)
+\]
+
+Ce phénomène peut survenir, par exemple, lorsqu’un vieillissement entraîne une variation globale du taux de panne, sans modification significative des conditions opérationnelles instantanées.
+
+\subsubsection{Concept Drift}
+
+Le \textit{concept drift} représente le cas le plus complexe, dans lequel la relation entre les variables explicatives et la variable cible évolue au cours du temps. Mathématiquement, cela se traduit par une variation de la distribution conditionnelle :
+
+\[
+P_{\text{train}}(Y \mid X) \neq P_{\text{production}}(Y \mid X)
+\]
+
+Dans ce cas, même si la distribution des variables explicatives reste stable, le modèle devient obsolète car le concept sous-jacent à prédire a changé. Ce type de drift nécessite généralement une mise à jour ou un réentraînement du modèle.
+
+\subsection{Lien avec les Hypothèses Statistiques}
+
+Les méthodes de détection du data drift reposent essentiellement sur des tests d’hypothèses statistiques. Ces tests visent à comparer les distributions observées en phase d’entraînement et en phase de production, en formulant l’hypothèse nulle suivante :
+
+\[
+H_0 : P_{\text{train}}(X) = P_{\text{production}}(X)
+\]
+
+Le rejet de cette hypothèse, à l’aide de tests tels que le test de Kolmogorov-Smirnov pour les variables numériques ou le test du Chi-deux pour les variables catégorielles, constitue un indicateur statistique de la présence d’un drift.
+
+Ainsi, l’analyse du data drift s’inscrit pleinement dans le cadre des mathématiques appliquées et des statistiques inférentielles, en fournissant des outils rigoureux pour évaluer la stabilité des données et la fiabilité des modèles de machine learning déployés en production.
+
+
+\section{Génération des Données et Modèle Baseline}
+
+Dans cette section, nous décrivons la génération des données synthétiques utilisées dans le cadre du projet, ainsi que la construction du modèle de machine learning de référence. L’utilisation de données simulées permet de contrôler précisément les distributions statistiques et de reproduire des scénarios réalistes de changement de distribution.
+
+\subsection{Génération des Données d’Entraînement (Phase A)}
+
+Les données de la phase d’entraînement, considérées comme représentatives d’un environnement stable, sont générées artificiellement à l’aide de la bibliothèque \texttt{NumPy}. Cette approche permet de définir explicitement les lois de probabilité sous-jacentes aux variables explicatives.
+
+Soit $X = (X_1, X_2, \dots, X_p)$ un vecteur de variables d’entrée. Dans ce projet, les variables numériques sont générées à partir de distributions continues, par exemple des lois normales :
+
+\[
+X_1 \sim \mathcal{N}(\mu_1, \sigma_1^2), \quad
+X_2 \sim \mathcal{N}(\mu_2, \sigma_2^2)
+\]
+
+La variable cible $Y$ est ensuite générée en fonction des variables explicatives à l’aide d’une fonction de décision, simulant un comportement réaliste de classification binaire. Cette approche permet de disposer d’un jeu de données contrôlé, tout en conservant une structure proche d’un problème réel de machine learning.
+
+Les données générées constituent la \textbf{Phase A}, correspondant aux données historiques utilisées pour l’entraînement du modèle.
+
+\subsection{Entraînement du Modèle de Référence}
+
+Un modèle de classification est entraîné sur les données de la Phase A afin de simuler un modèle déjà déployé en production. Dans ce projet, un algorithme de machine learning issu de la bibliothèque \texttt{scikit-learn} est utilisé.
+
+Les données sont divisées en ensembles d’entraînement et de validation afin d’évaluer les performances initiales du modèle. Le score obtenu sur ces données constitue la performance de référence, notée $S_A$, servant de point de comparaison pour l’analyse post-déploiement.
+
+\subsection{Génération des Données de Production (Phase B)}
+
+Afin de simuler un changement de distribution post-déploiement, un nouveau jeu de données est généré à l’aide de \texttt{NumPy}. Contrairement à la Phase A, la distribution d’une variable clé (la température) est volontairement modifiée.         
+Par exemple, la variable \texttt{temperature} initialement distribuée selon :
+
+\[
+X_{\text{temp}}^{(A)} \sim \mathcal{N}(75, \sigma^2)
+\]
+
+est remplacée en Phase B par :
+
+\[
+X_{\text{temp}}^{(B)} \sim \mathcal{N}(82, \sigma^2)
+\]
+
+où le déplacement de la moyenne ($+7$) simule une surchauffe progressive ou un dérèglement du capteur. Cette modification correspond à un \textit{covariate drift} sévère.                                                            
+Les données générées forment la \textbf{Phase B}, représentant les données observées en production après le déploiement du modèle.
+
+\subsection{Objectif de la Comparaison}
+
+L’objectif principal est de comparer les distributions des variables entre les Phases A et B à l’aide de tests statistiques non paramétriques, puis d’évaluer l’impact de ce changement de distribution sur la performance du modèle de machine learning. Cette analyse permet de déterminer si le modèle initialement entraîné demeure valide face à l’évolution des données.

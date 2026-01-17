@@ -1,0 +1,304 @@
+\begin{filecontents}{references.bib}
+@article{gama2014survey,
+  title={A survey on concept drift adaptation},
+  author={Gama, Jo{\~a}o and Zliobaite, Indre and Bifet, Albert and Pechenizkiy, Mykola and Bouchachia, Abdelhamid},
+  journal={ACM computing surveys (CSUR)},
+  volume={46},
+  number={4},
+  pages={1--37},
+  year={2014},
+  publisher={ACM New York, NY, USA}
+}
+@article{kolmogorov1933sulla,
+  title={Sulla determinazione empirica di una legge di distribuzione},
+  author={Kolmogorov, Andrey},
+  journal={Giornale dell'Istituto Italiano degli Attuari},
+  volume={4},
+  pages={83--91},
+  year={1933}
+}
+\end{filecontents}
+
+% CHANGEMENT 1 : Utilisation de la classe 'report' au lieu de 'article'
+% 'openany' évite que les chapitres ne commencent obligatoirement sur une page impaire (économise du papier)
+\documentclass[11pt,a4paper,openany]{report}
+
+% ==================== PACKAGES & CONFIGURATION ====================
+
+% --- Langue & Encodage ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[autostyle]{csquotes}
+\usepackage{microtype}
+\usepackage[skip=12pt plus 2pt]{parskip} 
+% --- Typographie & Fontes ---
+\usepackage{mathpazo}
+\usepackage[scaled=0.95]{helvet}
+\usepackage{courier}
+
+% --- Mise en page ---
+\usepackage{geometry}
+\geometry{
+    margin=2.5cm,
+    headheight=14pt
+}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% --- Mathématiques ---
+\usepackage{amsmath, amssymb, amsfonts, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% --- Graphiques & Tableaux ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table,xcdraw,dvipsnames]{xcolor}
+
+% --- Code ---
+\usepackage{listings}
+\usepackage{tcolorbox}
+
+% --- Bibliographie ---
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+\linespread{1.15} 
+
+% --- Navigation ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=MidnightBlue,
+    urlcolor=BrickRed,
+    citecolor=ForestGreen,
+    pdfauthor={Abdrahman Belkasmi}, % Mis à jour avec votre nom
+    pdftitle={Détection de Drift}
+}
+\usepackage[noabbrev,french]{cleveref}
+
+% ==================== STYLISATION PERSONNALISÉE ====================
+
+% --- Configuration En-tête/Pied de page ---
+\pagestyle{fancy}
+\fancyhf{}
+% On garde le titre du projet, mais on pourrait mettre \leftmark pour afficher le Chapitre courant
+\lhead{\small \textit{Détection de Drift Post-Déploiement}}
+\rhead{\small \thepage \ / \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Redéfinition du style 'plain' (utilisé automatiquement par \chapter) pour garder les numéros de page
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \rhead{\small \thepage \ / \pageref{LastPage}}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% --- Stylisation des Titres (Titlesec) ---
+\usepackage{titlesec}
+
+% CHANGEMENT 2 : Configuration du style des CHAPITRES
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{MidnightBlue}} % Style du texte
+  {\chaptertitlename\ \thechapter}                % Label (ex: Chapitre 1)
+  {20pt}                                          % Espace vertical entre label et titre
+  {\Huge}                                         % Taille du titre du chapitre
+  [{\titlerule[1.5pt]}]                           % Ligne épaisse après le titre
+
+% Configuration des SECTIONS (ajusté pour report)
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{MidnightBlue}}{\thesection}{1em}{}[{\titlerule[0.8pt]}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{MidnightBlue}}{\thesubsection}{1em}{}
+
+% Espacement des titres
+\titlespacing*{\chapter}{0pt}{-20pt}{30pt} % {marge gauche}{espace avant}{espace après}
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+% --- Opérateurs Math ---
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% --- Style du Code ---
+\definecolor{codegray}{gray}{0.96}
+\definecolor{codeblue}{rgb}{0.2,0.3,0.7}
+\definecolor{codegreen}{rgb}{0.0,0.5,0.0}
+
+\lstset{
+    language=Python,
+    backgroundcolor=\color{codegray},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{codeblue}\bfseries,
+    commentstyle=\color{codegreen}\itshape,
+    stringstyle=\color{Red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    rulecolor=\color{black!30},
+    literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ç}{{\c{c}}}1 {œ}{{\oe}}1 {ù}{{\`u}}1 {É}{{\'E}}1,
+    captionpos=b
+}
+
+% ==================== CONTENU DU DOCUMENT ====================
+\begin{document}
+
+% --- Page de Garde ---
+\begin{titlepage}
+    \newcommand{\HRule}{\rule{\linewidth}{0.5mm}} 
+    \center 
+    
+    % Logos
+    \begin{figure}[H]
+        \centering
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            % Assurez-vous que ces images existent ou commentez-les pour compiler
+            \includegraphics[height=2.0cm, keepaspectratio]{images/logo-uae-1024x297.png}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[height=2.3cm, keepaspectratio]{images/fst-1024x383.png} 
+        \end{minipage}
+    \end{figure}
+    
+    \vspace{1.0cm}
+    
+    {\Large \textsc{Université Abdelmalek Essaâdi}}\\[0.2cm]
+    {\large Faculté des Sciences et Techniques - Tanger}\\[0.2cm]
+    {\large Département d'Informatique}\\[0.5cm]
+    
+    {\small \textsc{Master Sciences et Techniques}}\\[0.1cm]
+    {\small \textsc{Intelligence Artificielle et Sciences des Données}}\\[1cm]
+    
+    \textsc{\Large Rapport de Projet}\\[0.5cm]
+    
+    \HRule \\[0.4cm]
+    { \huge \bfseries Détection de Changement de Distribution (Data Drift) \\[0.2cm]
+    \large Post-Déploiement d’un Modèle de Machine Learning }
+    \HRule \\[1.5cm]
+    
+    \begin{tcolorbox}[colback=blue!5!white,colframe=blue!60!black,title=Cadre du projet, width=0.85\textwidth]
+        \centering
+        \textbf{Module :} Mathématiques pour les Sciences des Données
+    \end{tcolorbox}
+    
+    \vspace{1.5cm}
+    
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushleft} \large
+        \emph{Réalisé par :}\\
+        Abdrahman \textsc{Belkasmi}\\
+        Mahmoud \textsc{Elgharib}\\
+        Ezzoubair \textsc{Zarqi}
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushright} \large
+        \emph{Encadré par :}\\
+        % Pr. Sanae \textsc{Khali Issa}
+        \end{flushright}
+    \end{minipage}
+    
+    \vfill
+    {\large Année Universitaire : 2025 -- 2026}
+    \vspace{1cm}
+    
+\end{titlepage}
+
+% ==================== ABSTRACT PAGES ====================
+
+% --- Résumé (Français) ---
+\clearpage
+\thispagestyle{empty} % No page number for the abstract
+\vspace*{\fill}       % Vertical filler top
+\begin{center}
+    \begin{tcolorbox}[
+        colback=blue!5!white,
+        colframe=blue!75!black,
+        title=\textbf{\large Résumé},
+        width=0.9\textwidth,
+        arc=2mm, auto outer arc,
+        boxrule=1.5pt
+    ]
+        \vspace{0.5em}
+        \large
+        Dans ce projet, nous étudions le problème de la détection de changement de distribution (\textit{drift}) dans un contexte de modèles de machine learning déployés en production. 
+        
+        \vspace{1em}
+        
+        Nous simulons un changement progressif des données d'entrée, appliquons des tests statistiques non paramétriques (tels que le test de Kolmogorov-Smirnov \cite{kolmogorov1933sulla}) pour détecter ce drift, puis analysons son impact sur la performance du modèle à l'aide d'intervalles de confiance.
+        \vspace{0.5em}
+    \end{tcolorbox}
+    
+    \vspace{1.5cm}
+    
+    % Mots-clés (Optionnel mais recommandé)
+    \textbf{Mots-clés :} \textit{Data Drift, Machine Learning, Kolmogorov-Smirnov, Surveillance de Modèle.}
+\end{center}
+\vspace*{\fill}       % Vertical filler bottom
+\clearpage            % Force page break
+
+% --- Abstract (English) ---
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+    \begin{tcolorbox}[
+        colback=gray!5!white,
+        colframe=gray!75!black, % Different color to distinguish languages
+        title=\textbf{\large Abstract},
+        width=0.9\textwidth,
+        arc=2mm, auto outer arc,
+        boxrule=1.5pt
+    ]
+        \vspace{0.5em}
+        \large
+        In this project, we address the problem of distribution shift detection (drift) in the context of machine learning models deployed in production.
+        
+        \vspace{1em}
+        
+        We simulate a progressive shift in input data, apply non-parametric statistical tests (such as the Kolmogorov-Smirnov test \cite{kolmogorov1933sulla}) to detect this drift, and analyze its impact on model performance using confidence intervals.
+        \vspace{0.5em}
+    \end{tcolorbox}
+    
+    \vspace{1.5cm}
+    
+    \textbf{Keywords:} \textit{Data Drift, Machine Learning, Kolmogorov-Smirnov, Model Monitoring.}
+\end{center}
+\vspace*{\fill}
+\clearpage
+
+\vspace{1cm}
+\tableofcontents
+\newpage
+
+% --- Chapitres ---
+\include{chapters/01-Introduction}
+
+\include{chapters/02-methodes-statistiques-détection-drift}
+
+\include{chapters/03-impact-changement-distribution-performance-modele}
+
+\include{chapters/04-Conclusion}
+
+
+% Exemple de structure si vous n'avez pas encore le fichier inclus :
+% \chapter{Introduction}
+% \section{Contexte}
+% Le concept drift est un problème majeur \cite{gama2014survey}...
+
+\printbibliography[title={Références}, heading=bibintoc]
+
+\end{document}

@@ -1,0 +1,44 @@
+% ==================================================
+% CHAPITRE 4 : CONCLUSION GÉNÉRALE
+% ==================================================
+
+\chapter{Conclusion Générale et Perspectives}
+\label{ch:conclusion}
+
+Ce projet a permis d'explorer la problématique cruciale du \textit{data drift} (changement de distribution) dans le cycle de vie d'un modèle de machine learning, en l'illustrant par un cas d'usage concret de maintenance prédictive industrielle.
+
+\section{Synthèse des Travaux}
+
+Notre démarche s'est articulée autour de trois axes principaux : la simulation de données réalistes, la détection statistique du drift et l'évaluation de son impact sur la performance prédictive.
+
+Premièrement, nous avons généré un jeu de données synthétique simulant des relevés de capteurs industriels (température, vibration, pression, RPM). Nous avons reproduit un scénario de dérive spécifique : une augmentation progressive de la température moyenne, simulant une usure ou un décalibrage de capteur, tandis que les autres paramètres restaient stables.
+
+Deuxièmement, nous avons appliqué le test de Kolmogorov-Smirnov (KS) pour surveiller ces variables. Ce test non-paramétrique s'est révélé particulièrement efficace pour isoler la variable défaillante (\texttt{temperature}), avec une p-value tendant vers zéro, tout en validant la stabilité des autres capteurs. Cette étape confirme l'importance des tests statistiques pour un diagnostic précis et automatisable.
+
+Troisièmement, nous avons quantifié l'impact de ce drift sur le modèle de prédiction de pannes. En utilisant la méthode du bootstrapping, nous avons construit des intervalles de confiance pour l'accuracy du modèle. La comparaison entre la phase saine (Phase A) et la phase détériorée (Phase B) a mis en évidence une chute significative des performances. Cette dégradation souligne un risque majeur : un modèle "aveugle" au changement de données continue de faire des prédictions, mais avec une fiabilité considérablement réduite.
+
+\section{Apports du Projet}
+
+Ce travail met en lumière plusieurs enseignements clés pour l'industrialisation de l'IA :
+\begin{itemize}
+    \item \textbf{La nécessité du monitoring constant :} Le déploiement d'un modèle n'est pas une fin en soi. Sans surveillance active de la distribution des données d'entrée, la qualité des prédictions peut s'effondrer silencieusement.
+    \item \textbf{La complémentarité des approches :} Les tests statistiques (comme KS) agissent comme des "capteurs de capteurs", alertant sur la nature du changement, tandis que l'inférence sur la performance (bootstrapping) mesure la gravité de l'impact métier.
+    \item \textbf{L'interprétabilité :} Savoir qu'un modèle performe moins bien est utile, mais comprendre \textit{pourquoi} (ici, à cause de la température) permet aux équipes opérationnelles d'intervenir plus vite (réparation capteur ou maintenance machine).
+\end{itemize}
+
+\section{Limites et Perspectives}
+
+Bien que les résultats obtenus soient probants, cette étude repose sur des données simulées avec un drift relativement simple (changement de moyenne). Dans un environnement réel, les phénomènes peuvent être plus complexes :
+\begin{itemize}
+    \item \textbf{Drifts multiples et corrélés :} Plusieurs capteurs peuvent dériver simultanément de manière non linéaire.
+    \item \textbf{Concept Drift :} La relation entre les variables et la panne peut changer (par exemple, une machine peut devenir plus robuste à la chaleur après une mise à jour matérielle), rendant la définition même de la "panne" mouvante.
+\end{itemize}
+
+Pour aller plus loin, plusieurs pistes d'amélioration peuvent être envisagées :
+\begin{itemize}
+    \item \textbf{Mise en place d'un réentraînement automatique :} Déclencher un pipeline de \textit{retraining} dès qu'un drift statistique dépasse un certain seuil.
+    \item \textbf{Utilisation d'algorithmes de détection en ligne :} Adapter les méthodes pour des flux de données en temps réel (streaming) plutôt que par lots (batch).
+    \item \textbf{Exploration de méthodes multivariées :} Utiliser des auto-encodeurs ou d'autres techniques de détection d'anomalies pour capter des changements dans les interactions entre variables, invisibles aux tests univariés comme KS.
+\end{itemize}
+
+En conclusion, la détection et la gestion du data drift sont des composantes indispensables d'une stratégie MLOps robuste, garantissant que les modèles d'intelligence artificielle restent des outils d'aide à la décision fiables et pérennes.
