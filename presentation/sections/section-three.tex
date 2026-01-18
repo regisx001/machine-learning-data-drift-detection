@@ -1,0 +1,50 @@
+\section{Résultats et Conclusion}
+
+\begin{frame}{Résultats de la Détection (KS)}
+    Le test statistique a permis d'isoler automatiquement la variable défaillante.
+    
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{l|c|c|l} \toprule
+            \textbf{Variable} & \textbf{Statistique KS} & \textbf{p-value} & \textbf{Conclusion} \\ \midrule
+            Température & \textbf{0.70} & \textbf{< 0.001} & \textcolor{red}{\textbf{Drift Critique}} \\ 
+            Vibration & 0.03 & 0.58 & Stable \\ 
+            Pression & 0.02 & 0.72 & Stable \\ 
+            RPM & 0.04 & 0.45 & Stable \\ \bottomrule
+        \end{tabular}
+    \end{table}
+    
+    \vspace{0.3cm}
+    \textbf{Diagnostic} : Surchauffe confirmée. Les autres capteurs fonctionnent normalement.
+\end{frame}
+
+\begin{frame}{Impact sur la Performance Business}
+    Comparaison de l'Accuracy (Modèle de prédiction de panne) :
+    
+    \begin{figure}
+        \centering
+        % Boxplot comparison
+        \includegraphics[width=0.85\textwidth]{./images/model_performance_comparison.png}
+        \caption{Chute de 95\% à 88\% (Intervalles disjoints $\rightarrow$ Significatif)}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Conclusion Générale}
+    \begin{itemize}
+        \item \textbf{Data Drift} : Une menace invisible pour les systèmes IA industriels.
+        \item \textbf{La Solution} :
+        \begin{itemize}
+            \item \textbf{Surveiller} les données brutes (Test KS).
+            \item \textbf{Qualifier} l'impact métier (Bootstrapping).
+        \end{itemize}
+        \item \textbf{Prochaine étape} : Automatiser le réentraînement du modèle dès que le drift dépasse un seuil critique.
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}{}
+    \vspace{1cm}
+    \centering
+    \Huge \textcolor{deepblue}{Merci de votre attention !}
+\end{frame}

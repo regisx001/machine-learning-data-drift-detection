@@ -1,0 +1,37 @@
+\section{Méthodologie}
+
+\begin{frame}{1. Simulation des Données Capteurs}
+    Comparaison entre la Phase A (Saine) et la Phase B (Défaut).
+    
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{./images/distribution_rpm.png}
+            \caption{\textbf{Stable} : Rotations/min (RPM)}
+        \end{figure}
+        Pas de changement de distribution.
+        
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{./images/distribution_temperature.png}
+            \caption{\textbf{Drift} : Température (+7°C)}
+        \end{figure}
+        Décalage net vers la droite.
+    \end{columns}
+\end{frame}
+
+\begin{frame}{2. Méthodes Statistiques}
+    \begin{block}{Détection : Test de Kolmogorov-Smirnov (KS)}
+        Mesure la distance maximale entre les fonctions de répartition cumulées (CDF).
+        \[ D = \sup_x |F_A(x) - F_B(x)| \]
+        Si \_value < 0.05 \Rightarrow$ \textbf{Alerte Drift}.
+    \end{block}
+
+    \begin{block}{Impact : Bootstrapping}
+        Estimation de la distribution de l'Accuracy par rééchantillonnage (1000 itérations).
+        \[ IC_{95\%} = [\mu - 1.96\sigma, \mu + 1.96\sigma] \]
+        Permet de prouver que la baisse de qualité n'est pas un hasard.
+    \end{block}
+\end{frame}

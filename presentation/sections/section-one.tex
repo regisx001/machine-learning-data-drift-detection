@@ -1,0 +1,38 @@
+\section{Introduction}
+
+\begin{frame}{Contexte et Définition}
+    \begin{columns}
+        \column{0.6\textwidth}
+        \textbf{Le Problème :}
+        \begin{itemize}
+            \item Les modèles ML sont entraînés sur des données historiques (supposées statiques).
+            \item En production, l'environnement évolue (usure, météo, changements économiques).
+            \item Ce phénomène s'appelle le \textbf{Data Drift}.
+        \end{itemize}
+        
+        \vspace{0.2cm}
+        
+        \textbf{Cas d'application :}
+        \begin{itemize}
+            \item Maintenance Prédictive (Industrie 4.0).
+            \item Un capteur de température se dérègle progressivement.
+        \end{itemize}
+
+        \column{0.4\textwidth}
+        \begin{figure}
+            \centering
+            % Visualisation du Drift
+            \includegraphics[width=\textwidth]{./images/distribution_temperature.png}
+            \caption{Exemple de Drift : Décalage de la distribution}
+        \end{figure}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Objectifs du Projet}
+    Nous avons mis en place une chaîne complète de surveillance :
+    \begin{enumerate}
+        \item \textbf{Simulation} : Génération de données capteurs (Temp, Vibration, RPM) avec scénario de panne.
+        \item \textbf{Détection} : Utilisation du test statistique \textbf{Kolmogorov-Smirnov} pour identifier la dérive.
+        \item \textbf{Impact} : Mesure de la dégradation du modèle via \textbf{Bootstrapping} (Intervalles de confiance).
+    \end{enumerate}
+\end{frame}

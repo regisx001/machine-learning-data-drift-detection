@@ -1,0 +1,84 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{tribhuvan}
+
+% Logo positioning packages
+\usepackage{tikz}
+\usepackage{eso-pic}
+
+% other packages
+\usepackage{latexsym,amsmath,xcolor,multicol,booktabs,calligra}
+\usepackage{graphicx,pstricks,listings,stackengine}
+
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{references.bib}
+
+\author{Abdrahman Belkasmi, Mahmoud Elgharib, Ezzoubair Zarqi}
+\title[Détection de Data Drift]{Détection de Changement de Distribution (Data Drift)}
+\subtitle{Post-Déploiement d’un Modèle de Maintenance Prédictive}
+\institute{Université Abdelmalek Essaâdi \\ Faculté des Sciences et Techniques - Tanger}
+\date{Année Universitaire 2025 -- 2026}
+
+% defs
+\def\cmd#1{\texttt{\color{red}\footnotesize $\backslash$#1}}
+\def\env#1{\texttt{\color{blue}\footnotesize #1}}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{halfgray}{gray}{0.55}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\bfseries\color{deepblue},
+    emphstyle=\ttfamily\color{deepred},    % Custom highlighting style
+    stringstyle=\color{deepgreen},
+    numbers=left,
+    numberstyle=\small\color{halfgray},
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    frame=shadowbox,
+}
+
+% Custom command to add logos to title page
+\newcommand{\addlogos}{%
+    \AddToShipoutPictureFG*{%
+        \begin{tikzpicture}[remember picture,overlay]
+            % Left logo
+            \node[anchor=north west,inner sep=25pt] at (current page.north west) {%
+                \includegraphics[width=0.3\textwidth]{images/logo-uae-1024x297.png}%
+            };
+            % Right logo
+            \node[anchor=north east,inner sep=25pt] at (current page.north east) {%
+                \includegraphics[width=0.3\textwidth]{images/fst-1024x383.png}%
+            };
+        \end{tikzpicture}%
+    }%
+}
+
+\begin{document}
+
+% Title frame with logos
+{
+    \addlogos
+    \begin{frame}
+        \vspace{30pt}
+        \titlepage
+        \vspace{-10pt}
+    \end{frame}
+}
+
+\begin{frame}
+    \tableofcontents[sectionstyle=show,subsectionstyle=show/shaded/hide,subsubsectionstyle=show/shaded/hide]
+\end{frame}
+
+\input{sections/section-one}
+
+\input{sections/section-two}
+
+\input{sections/section-three}
+
+% \begin{frame}[allowframebreaks]
+%     \printbibliography
+% \end{frame}
+
+\end{document}
